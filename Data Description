@@ -1,1 +1,33 @@
 Coding done in R
+
+#Loading in the dataset.
+install.packages("dplyr")
+library(dplyr)
+library(readxl)
+Video_Games <- read_excel("Video_Games.xlsx")
+View(Video_Games)
+
+#Viewing the Summary Statistics.
+head(Video_Games)
+tail(Video_Games)
+str(Video_Games)
+summary(Video_Games)
+summary(Video_Games$Global_Sales)
+mean_sales <- mean(Video_Games$Global_Sales)
+median_sales <- median(Video_Games$Global_Sales)
+max_sales <- max(Video_Games$Global_Sales)
+min_sales <- min(Video_Games$Global_Sales)
+variance_sales <- var(Video_Games$Global_Sales)
+sd_sales <- sd(Video_Games$Global_Sales)
+cat("Mean Sales: ", mean_sales, "\n")
+cat("Median Sales: ", median_sales, "\n")
+cat("Maximum Sales: ", max_sales, "\n")
+cat("Minimum Sales: ", min_sales, "\n")
+cat("Variance of Sales: ", variance_sales, "\n")
+cat("Standard Deviation of Sales: ", sd_sales, "\n")
+
+#Viewing min/max observations.
+max_sales_observation <- Video_Games[Video_Games$Global_Sales == max_sales, ]
+print(max_sales_observation)
+min_sales_observation <- Video_Games[Video_Games$Global_Sales == min_sales, ]
+print(min_sales_observation)
