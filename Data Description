@@ -31,3 +31,11 @@ max_sales_observation <- Video_Games[Video_Games$Global_Sales == max_sales, ]
 print(max_sales_observation)
 min_sales_observation <- Video_Games[Video_Games$Global_Sales == min_sales, ]
 print(min_sales_observation)
+
+#Creating Figure 1: Plot of NA Video Game Sales
+plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Observations", ylab = "NA Unit Sales (Millions)")
+
+#Creating Figure 2: Barplot of Top 10 Platforms
+platform_sorted <- Platform_data.frame[order(Platform_data.frame$Freq, decreasing = TRUE), ]
+barplot(head(platform_sorted$Freq, 10), names.arg = head(platform_sorted$Platform, 10), xlab = "Top 10 Platforms", ylab = "# of Games on Platform")
+
