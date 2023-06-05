@@ -39,3 +39,22 @@ plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Obs
 platform_sorted <- Platform_data.frame[order(Platform_data.frame$Freq, decreasing = TRUE), ]
 barplot(head(platform_sorted$Freq, 10), names.arg = head(platform_sorted$Platform, 10), xlab = "Top 10 Platforms", ylab = "# of Games on Platform")
 
+#Creating Methodology Diagram
+library(DiagrammeR)
+code <- "
+digraph flowchart {
+  # Define the nodes
+  node [shape = box] Start Data_Collection Data_Preprocessing Exploratory_Data_Analysis
+  node [shape = box] Correlation_Analysis Predictive_Modeling Evaluation End
+
+  # Define the edges
+  Start -> Data_Collection
+  Data_Collection -> Data_Preprocessing
+  Data_Preprocessing -> Exploratory_Data_Analysis
+  Exploratory_Data_Analysis -> Correlation_Analysis
+  Correlation_Analysis -> Predictive_Modeling
+  Predictive_Modeling -> Evaluation
+  Evaluation -> End
+}"
+graph <- grViz(code)
+graph
