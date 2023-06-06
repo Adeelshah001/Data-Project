@@ -1,3 +1,39 @@
+#Coding Done in Python
+#Profile Report and Summary Statistics 
+import pandas as pd
+import pandas_profiling as pp
+dataset = pd.read_excel('Video_Games.xlsx')
+profile = pp.ProfileReport(dataset)
+profile.to_file("profile_report.html")
+profile
+
+#Creating Figure 1: Plot of NA Video Game Sales
+plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Observations", ylab = "NA Unit Sales (Millions)")
+
+#Creating Figure 2: Barplot of Top 10 Platforms
+platform_sorted <- Platform_data.frame[order(Platform_data.frame$Freq, decreasing = TRUE), ]
+barplot(head(platform_sorted$Freq, 10), names.arg = head(platform_sorted$Platform, 10), xlab = "Top 10 Platforms", ylab = "# of Games on Platform")
+
+#Creating Methodology Diagram
+library(DiagrammeR)
+code <- "
+digraph flowchart {
+  # Define the nodes
+  node [shape = box] Start Data_Collection Data_Preprocessing Exploratory_Data_Analysis
+  node [shape = box] Correlation_Analysis Predictive_Modeling Evaluation End
+
+  # Define the edges
+  Start -> Data_Collection
+  Data_Collection -> Data_Preprocessing
+  Data_Preprocessing -> Exploratory_Data_Analysis
+  Exploratory_Data_Analysis -> Correlation_Analysis
+  Correlation_Analysis -> Predictive_Modeling
+  Predictive_Modeling -> Evaluation
+  Evaluation -> End
+}"
+graph <- grViz(code)
+graph
+
 #Coding done in R
 
 #Loading in the dataset.
@@ -31,39 +67,3 @@ max_sales_observation <- Video_Games[Video_Games$Global_Sales == max_sales, ]
 print(max_sales_observation)
 min_sales_observation <- Video_Games[Video_Games$Global_Sales == min_sales, ]
 print(min_sales_observation)
-
-#Creating Figure 1: Plot of NA Video Game Sales
-plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Observations", ylab = "NA Unit Sales (Millions)")
-
-#Creating Figure 2: Barplot of Top 10 Platforms
-platform_sorted <- Platform_data.frame[order(Platform_data.frame$Freq, decreasing = TRUE), ]
-barplot(head(platform_sorted$Freq, 10), names.arg = head(platform_sorted$Platform, 10), xlab = "Top 10 Platforms", ylab = "# of Games on Platform")
-
-#Creating Methodology Diagram
-library(DiagrammeR)
-code <- "
-digraph flowchart {
-  # Define the nodes
-  node [shape = box] Start Data_Collection Data_Preprocessing Exploratory_Data_Analysis
-  node [shape = box] Correlation_Analysis Predictive_Modeling Evaluation End
-
-  # Define the edges
-  Start -> Data_Collection
-  Data_Collection -> Data_Preprocessing
-  Data_Preprocessing -> Exploratory_Data_Analysis
-  Exploratory_Data_Analysis -> Correlation_Analysis
-  Correlation_Analysis -> Predictive_Modeling
-  Predictive_Modeling -> Evaluation
-  Evaluation -> End
-}"
-graph <- grViz(code)
-graph
-
-#Coding Done in Python
-#Profile Report and Summary Statistics 
-import pandas as pd
-import pandas_profiling as pp
-dataset = pd.read_excel('Video_Games.xlsx')
-profile = pp.ProfileReport(dataset)
-profile.to_file("profile_report.html")
-profile
