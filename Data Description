@@ -1,4 +1,4 @@
-#Coding Done in Python
+#Coding in Python
 #Profile Report and Summary Statistics 
 import pandas as pd
 import pandas_profiling as pp
@@ -7,6 +7,7 @@ profile = pp.ProfileReport(dataset)
 profile.to_file("profile_report.html")
 profile
 
+#Coding in R
 #Creating Figure 1: Plot of NA Video Game Sales
 plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Observations", ylab = "NA Unit Sales (Millions)")
 
@@ -33,8 +34,6 @@ digraph flowchart {
 }"
 graph <- grViz(code)
 graph
-
-#Coding done in R
 
 #Loading in the dataset.
 install.packages("dplyr")
