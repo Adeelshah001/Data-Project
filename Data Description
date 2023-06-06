@@ -1,4 +1,4 @@
-Coding done in R
+#Coding done in R
 
 #Loading in the dataset.
 install.packages("dplyr")
@@ -59,4 +59,11 @@ digraph flowchart {
 graph <- grViz(code)
 graph
 
-
+#Coding Done in Python
+#Profile Report and Summary Statistics 
+import pandas as pd
+import pandas_profiling as pp
+dataset = pd.read_excel('Video_Games.xlsx')
+profile = pp.ProfileReport(dataset)
+profile.to_file("profile_report.html")
+profile
