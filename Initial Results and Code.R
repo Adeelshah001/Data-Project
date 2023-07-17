@@ -172,6 +172,15 @@ publisher_sales <- publisher_sales[order(publisher_sales$Global_Sales, decreasin
 top_10_publishers <- head(publisher_sales, 10)
 barplot(top_10_publishers$Global_Sales, names.arg = top_10_publishers$Publisher, xlab = "Publisher", ylab = "Global Sales")
 
+#Sales by user score
+Video_Games$User_Score <- as.numeric(as.character(Video_Games$User_Score))
+subset_df <- Video_Games[!is.na(Video_Games$User_Score), ]
+sales_by_user_score <- aggregate(subset_df$Global_Sales, by = list(user_score = subset_df$User_Score), FUN = sum)
+sales_by_user_score <- sales_by_user_score[order(sales_by_user_score$user_score, decreasing = TRUE), ]
+barplot(sales_by_user_score$x, names.arg = sales_by_user_score$user_score,
+        xlab = "User Score", ylab = "Sales",
+        main = "Sales by User Score")
+
 # Random Split + random forest algorithm
 library(caret)
 #install.packages("randomForest")
