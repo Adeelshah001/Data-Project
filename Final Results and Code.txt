@@ -1,0 +1,384 @@
+#Figure 3 & 5.
+#Coding in Python.#
+#Profile Report and Summary Statistics in Python.
+import pandas as pd
+import pandas_profiling as pp
+dataset = pd.read_excel('Video_Games.xlsx')
+profile = pp.ProfileReport(dataset)
+profile.to_file("profile_report.html")
+profile
+
+#The Rest of the Coding is done in R.#
+library(readxl)
+Video_Games <- read_excel("Video_Games.xlsx")
+
+#Figure 1
+plot(Video_Games$NA_Sales, main = "North American Video Game Sales", xlab = "Observations", ylab = "NA Unit Sales (Millions)")
+
+#Figure 2
+Platform_data.frame <- data.frame(table(Video_Games$Platform))
+platform_sorted <- Platform_data.frame[order(Platform_data.frame$Freq, decreasing = TRUE), ]
+barplot(head(platform_sorted$Freq, 10), names.arg = head(platform_sorted$Platform, 10), xlab = "Top 10 Platforms", ylab = "# of Games on Platform")
+
+#Figure 4: Top Publishers by Global Sales
+publisher_sales <- aggregate(Global_Sales ~ Publisher, data = Video_Games, FUN = sum)
+head(publisher_sales[order(publisher_sales$Global_Sales, decreasing = TRUE), ])
+
+#Figure 6
+#Sales by user score
+Video_Games$User_Score <- as.numeric(as.character(Video_Games$User_Score))
+subset_df <- Video_Games[!is.na(Video_Games$User_Score), ]
+sales_by_user_score <- aggregate(subset_df$Global_Sales, by = list(user_score = subset_df$User_Score), FUN = sum)
+sales_by_user_score <- sales_by_user_score[order(sales_by_user_score$user_score, decreasing = TRUE), ]
+barplot(sales_by_user_score$x, names.arg = sales_by_user_score$user_score,
+        xlab = "User Score", ylab = "Sales",
+        main = "Sales by User Score")
+
+#Sales by critic score
+Video_Games$Critic_Score <- as.numeric(as.character(Video_Games$Critic_Score))
+subset_df <- Video_Games[!is.na(Video_Games$Critic_Score), ]
+sales_by_critic_score <- aggregate(subset_df$Global_Sales, by = list(critic_score = subset_df$Critic_Score), FUN = sum)
+sales_by_critic_score <- sales_by_critic_score[order(sales_by_critic_score$critic_score, decreasing = TRUE), ]
+barplot(sales_by_critic_score$x, names.arg = sales_by_critic_score$critic_score,
+        xlab = "Critic Score", ylab = "Sales",
+        main = "Sales by Critic Score")
+
+#Displaying both barplots side by side for comparison
+dev.new()
+par(mfrow = c(1, 2))
+barplot(sales_by_critic_score$x, names.arg = sales_by_critic_score$critic_score,
+        xlab = "Critic Score", ylab = "Sales",
+        main = "Sales by Critic Score")
+barplot(sales_by_user_score$x, names.arg = sales_by_user_score$user_score,
+        xlab = "User Score", ylab = "Sales",
+        main = "Sales by User Score")
+
+#Figure 7
+#sales for games released in certain year
+sales_by_year <- aggregate(Global_Sales ~ Year_of_Release, data = Video_Games, FUN = sum)
+head(sales_by_year)
+plot(sales_by_year)
+head(sales_by_year[order(-sales_by_year$Global_Sales), ])
+barplot(sales_by_year$Global_Sales, names.arg = sales_by_year$Year_of_Release, 
+        xlab = "Year", ylab = "Total Sales", main = "Total Sales per Year")
+sales_by_year <- sales_by_year[sales_by_year$Year_of_Release >= 1996 & sales_by_year$Year_of_Release <= 2016, ]
+barplot(sales_by_year$Global_Sales, names.arg = sales_by_year$Year_of_Release, 
+        xlab = "Year", ylab = "Total Sales", main = "Total Sales per Year (1996-2016)")
+
+#figure 8 & 9
+#sales per developer/publisher
+sales_per_dev <- aggregate(Global_Sales ~ Developer, data = Video_Games, sum)
+sales_per_dev <- sales_per_dev[order(sales_per_dev$Global_Sales, decreasing = TRUE), ]
+head(sales_per_dev, 10)
+top_10_developers <- head(sales_per_dev, 10)
+barplot(top_10_developers$Global_Sales, names.arg = top_10_developers$Developer, xlab = "Developer", ylab = "Global Sales")
+#remove the first dev
+top_10_developers <- head(sales_per_dev[-1, ], 10)
+bar_colors <- rainbow(length(top_10_developers$Developer))
+barplot(top_10_developers$Global_Sales, names.arg = top_10_developers$Developer, 
+        xlab = "Developer", ylab = "Global Sales", col = bar_colors, 
+        main = "Top 10 Developers by Sales")
+legend("topright", legend = top_10_developers$Developer, fill = bar_colors, 
+       bty = "n", horiz = FALSE)
+
+#doing the same with publishers
+sales_per_pub <- aggregate(Global_Sales ~ Publisher, data = Video_Games, sum)
+sales_per_pub <- sales_per_pub[order(sales_per_pub$Global_Sales, decreasing = TRUE), ]
+head(sales_per_pub, 10)
+top_10_publishers <- head(sales_per_pub, 10)
+barplot(top_10_publishers$Global_Sales, names.arg = top_10_publishers$Publisher, xlab = "Publisher", ylab = "Global Sales")
+top_10_publishers <- head(sales_per_pub[-1, ], 10)
+barplot(top_10_publishers$Global_Sales, names.arg = top_10_publishers$Publisher, xlab = "Publisher", ylab = "Global Sales", las = 2)
+bar_colors <- rainbow(length(top_10_publishers$Publisher))
+barplot(top_10_publishers$Global_Sales, names.arg = top_10_publishers$Publisher, 
+        xlab = "Publisher", ylab = "Global Sales", col = bar_colors, 
+        main = "Top 10 Publishers by Sales")
+legend("topright", legend = top_10_publishers$Publisher, fill = bar_colors, 
+       bty = "n", horiz = FALSE)
+
+#Figure 10
+#genre frequency
+genre_frequency <- table(Video_Games$Genre)
+genre_proportions <- prop.table(genre_frequency) * 100
+labels <- paste(names(genre_proportions), "(", round(genre_proportions, 1), "%)", sep = "")
+pie(genre_proportions, labels = labels, main = "Genre Frequency")
+
+#Figure 11
+#multiple bar plots of regions sales
+library(ggplot2)
+sales_data_genre <- Video_Games[, c("Genre", "NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales")]
+sales_data_long <- tidyr::gather(sales_data_genre, Region, Sales, -Genre)
+ggplot(sales_data_long, aes(x = Genre, y = Sales)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ Region, scales = "free_y") +
+  labs(x = "Genre", y = "Sales") +
+  ggtitle("Region Sales by Genre") +
+  theme_minimal()
+#the disparity of Role-Playing genre in JP_Sales gives insight as to the type of games preferred in that region.
+
+#Figure 12
+#plotting the global sales for Multiple_Platform titles
+multiplat <- subset(Video_Games3, Multiple_Platforms == "yes")
+not_multiplat <- subset(Video_Games3, Multiple_Platforms == "no")
+multiplat_sales <- sum(multiplat$Global_Sales)
+not_multiplat_sales <- sum(not_multiplat$Global_Sales)
+sales <- c(multiplat_sales, not_multiplat_sales)
+categories <- c("Multi-platform", "Not Multi-platform")
+barplot(sales, names.arg = categories, xlab = "Category", ylab = "Global Sales", main = "Multi-platform Sales", col = c("red", "blue"))
+
+#ANOVA
+#performing ANOVA test on the "Global_Sales" column based on different genres
+anova_result1 <- aov(Global_Sales ~ Genre, data = Video_Games2)
+print(summary(anova_result1))
+anova_result1
+plot(anova_result1)
+#ANOVA with the all relevant columns
+anova_result2 <- aov(Global_Sales ~ Genre + Platform + Publisher + Developer, data = Video_Games2)
+print(summary(anova_result2))
+anova_result2
+
+#Linear Regression Model
+library(dplyr)
+library(caret)
+library(readxl)
+Video_Games <- read_excel("Video_Games.xlsx")
+Video_Games <- Video_Games[-1, ]
+Video_Games <- Video_Games[1:2500, ]
+
+# Select the relevant columns for regression analysis
+selected_columns <- c("Global_Sales", "Genre", "Platform", "Developer")
+regression_data <- Video_Games %>%
+  select(all_of(selected_columns))
+
+regression_data <- na.omit(regression_data)
+
+#Pre-processing the data
+regression_data <- regression_data %>%
+  mutate_if(is.character, as.factor)
+
+#Splitting the data into training and testing sets
+train_indices <- createDataPartition(regression_data$Global_Sales, p = 0.7, list = FALSE)
+train_data <- regression_data[train_indices, ]
+test_data <- regression_data[-train_indices, ]
+
+#Building the regression model
+model <- train(Global_Sales ~ ., data = train_data, method = "lm")
+print(model)
+
+#Evaluation Metrics
+#Predicting on the test set
+predictions <- predict(model, newdata = test_data)
+
+#Evaluating the model performance
+rmse <- sqrt(mean((predictions - test_data$Global_Sales)^2))
+rsquared <- cor(predictions, test_data$Global_Sales)^2
+rmse
+rsquared
+
+#Printing the evaluation metrics
+cat("RMSE:", rmse, "\n")
+cat("R-squared:", rsquared, "\n")
+
+#Scatter plot of predicted vs. actual values and Cook's Distance
+regression_model <- lm(Global_Sales ~ ., data = regression_data)
+summary(regression_model)
+fitted_values <- predict(regression_model)
+plot(regression_model$fitted.values, regression_data$Global_Sales, 
+     xlab = "Predicted Values", ylab = "Actual Values", main = "Scatter Plot")
+plot(regression_model$residuals, xlab = "Index", ylab = "Residuals", main = "Residual Plot")
+plot(regression_model, which = 4, main = "Cook's Distance Plot")
+Cook <- cooks.distance(regression_model)
+plot(Cook)
+
+#Mean absolute error
+predicted_values <- predict(regression_model)
+mae <- mean(abs(regression_data$Global_Sales - predicted_values))
+mae
+
+#Cross Validation
+num_folds <- 5
+ctrl <- trainControl(method = "cv", 
+                     number = num_folds,
+                     verboseIter = FALSE)
+model2 <- train(Global_Sales ~ ., 
+                data = regression_data, 
+                method = "lm",
+                trControl = ctrl)
+print(model2)
+
+#Random Forest Model
+library(readxl)
+library(caret)
+library(randomForest)
+library(dplyr)
+
+Video_Games <- read_excel("Video_Games.xlsx")
+Video_Games <- Video_Games[-1, ]
+Video_Games <- Video_Games[, c("Genre", "Platform", "Developer", "Global_Sales")]
+Video_Games <- na.omit(Video_Games)
+Video_Games <- Video_Games[1:1000, ]
+
+categorical_vars <- c("Genre", "Platform", "Developer")
+dummy_data <- dummyVars(" ~ .", data = Video_Games[, categorical_vars], sep = "_")
+
+encoded_data <- predict(dummy_data, newdata = Video_Games)
+encoded_data <- as.data.frame(encoded_data)
+encoded_data$Global_Sales <- Video_Games$Global_Sales
+
+train_indices <- createDataPartition(encoded_data$Global_Sales, p = 0.7, list = FALSE)
+x_train <- encoded_data[train_indices, ]
+y_train <- Video_Games$Global_Sales[train_indices]
+x_test <- encoded_data[-train_indices, ]
+y_test <- Video_Games$Global_Sales[-train_indices]
+
+rf_model <- randomForest(x_train, y_train, ntree = 100)
+print(rf_model)
+summary(rf_model)
+#Figure 13
+plot(rf_model$mse)
+rf_model$mse
+
+#Evaluation Metrics
+predictions <- predict(rf_model, newdata = x_test)
+mse <- mean((y_test - predictions)^2)
+mse
+ssr <- sum((predictions - mean(y_test))^2)
+sst <- sum((y_test - mean(y_test))^2)
+rsquared <- 1 - (ssr/sst)
+ssr
+sst
+rsquared
+
+#cross validation
+num_folds <- 5
+ctrl <- trainControl(method = "cv", 
+                     number = num_folds,
+                     verboseIter = TRUE)
+model <- train(Global_Sales ~ ., 
+               data = Video_Games, 
+               method = "rf",
+               trControl = ctrl)
+print(model)
+
+#SVR Model
+library(readxl)
+library(e1071)
+library(caret)
+
+Video_Games <- read_excel("Video_Games.xlsx")
+Video_Games <- Video_Games[-1, ]
+Video_Games <- Video_Games[, c("Genre", "Platform", "Developer", "Global_Sales")]
+Video_Games <- na.omit(Video_Games)
+Video_Games <- Video_Games[1:1000, ]
+
+categorical_vars <- c("Genre", "Platform", "Developer")
+dummy_data <- dummyVars(" ~ .", data = Video_Games[, categorical_vars], sep = "_")
+
+encoded_data <- predict(dummy_data, newdata = Video_Games)
+encoded_data <- as.data.frame(encoded_data)
+encoded_data$Global_Sales <- Video_Games$Global_Sales
+encoded_data$Global_Sales <- scale(encoded_data$Global_Sales)
+summary(encoded_data$Global_Sales)
+
+train_indices <- sample(1:nrow(encoded_data), 0.7 * nrow(encoded_data))
+train_data <- encoded_data[train_indices, ]
+test_data <- encoded_data[-train_indices, ]
+
+svr_model <- svm(Global_Sales ~ ., data = train_data, kernel = "radial")
+print(svr_model)
+
+train_predictions <- predict(svr_model, train_data)
+
+train_rmse <- sqrt(mean((train_predictions - train_data$Global_Sales)^2))
+train_r_squared <- cor(train_predictions, train_data$Global_Sales)^2
+cat("Training set RMSE:", train_rmse, "\n")
+cat("Training set R-squared:", train_r_squared, "\n")
+
+#Evaluation Metrics
+test_predictions <- predict(svr_model, test_data)
+
+test_rmse <- sqrt(mean((test_predictions - test_data$Global_Sales)^2))
+test_r_squared <- cor(test_predictions, test_data$Global_Sales)^2
+cat("Test set RMSE:", test_rmse, "\n")
+cat("Test set R-squared:", test_r_squared, "\n")
+
+#cross validation
+num_folds <- 5
+ctrl <- trainControl(method = "cv",
+                     number = num_folds,
+                     verboseIter = FALSE)
+model <- train(Global_Sales ~ .,
+               data = Video_Games,
+               method = "svmRadial",
+               trControl = ctrl)
+print(model)
+
+#XGBoost Model
+library(xgboost)
+library(readxl)
+library(caret)
+
+Video_Games <- read_excel("Video_Games.xlsx")
+Video_Games <- Video_Games[-1, ]
+Video_Games <- Video_Games[, c("Genre", "Platform", "Publisher", "Developer", "Global_Sales")]
+Video_Games <- na.omit(Video_Games)
+Video_Games <- Video_Games[1:1000, ]
+
+categorical_vars <- c("Genre", "Platform", "Developer")
+dummy_data <- dummyVars(" ~ .", data = Video_Games[, categorical_vars], sep = "_")
+
+encoded_data <- predict(dummy_data, newdata = Video_Games)
+encoded_data <- as.data.frame(encoded_data)
+encoded_data$Global_Sales <- Video_Games$Global_Sales
+
+train_indices <- sample(1:nrow(encoded_data), 0.7 * nrow(encoded_data))
+train_data <- encoded_data[train_indices, ]
+test_data <- encoded_data[-train_indices, ]
+
+train_features <- train_data[, -which(names(train_data) == "Global_Sales")]
+train_features <- as.matrix(train_features)
+train_target <- train_data$Global_Sales
+
+params <- list(
+  objective = "reg:squarederror",  # Objective function for regression
+  eta = 0.1,  # Learning rate
+  max_depth = 3,  # Maximum depth of each tree
+  nrounds = 100  # Number of boosting iterations
+)
+
+model <- xgboost(data = train_features,
+                 label = train_target,
+                 params = params, nrounds = 10)
+print(model)
+summary(model)
+
+#Evaluation metrics
+test_features <- test_data[, -which(names(train_data) == "Global_Sales")]
+test_target <- test_data$Global_Sales
+
+predictions <- predict(model, newdata = as.matrix(test_features))
+
+mse <- mean((predictions - test_target)^2)
+mae <- mean(abs(predictions - test_target))
+ss_total <- sum((test_target - mean(test_target))^2)
+ss_residual <- sum((predictions - test_target)^2)
+r_squared <- 1 - (ss_residual / ss_total)
+test_rmse <- sqrt(mean((predictions - test_data$Global_Sales)^2))
+cat("Test set RMSE:", test_rmse, "\n")
+print(paste("Mean Squared Error:", mse))
+print(paste("Mean Absolute Error:", mae))
+print(paste("R-squared (R²):", r_squared))
+
+#cross validation
+num_folds <- 3
+ctrl <- trainControl(method = "cv",
+                     number = num_folds,
+                     verboseIter = FALSE)
+model <- train(Global_Sales ~ .,
+               data = Video_Games,
+               method = "xgbTree",
+               trControl = ctrl,
+               verbosity = 0)
+print(model)
+summary(model)
+model$results
